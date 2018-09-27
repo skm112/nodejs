@@ -2,6 +2,7 @@ var express = require("express");
 var app = express();
 var bodyparser = require("body-parser");
 var fs = require("fs");
+const mongoose = require("mongoose");
 var path=require('path');
 
 // access controls----------------------------------------------
@@ -76,7 +77,6 @@ app.put("/update/:id", (req, res) => {
     console.log(data);
     console.log(req.params.id);
     var result = JSON.parse(data);
-    // result.push({ 'id': req.body.id, 'name': req.body.name });
     for (let i = 0; i < result.length; i++) {
       if (result[i].id === req.params.id) {
         result[i].name=req.body.name;
