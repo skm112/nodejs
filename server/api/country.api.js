@@ -49,18 +49,69 @@ router.put("/update/:id", (req, res) => {
     res.json(doc);
   });
 });
+//route--PUT for save state
+router.put("/update/state/:id", (req, res) => {
+  var _id = req.params.id;
+  console.log(req.body.name);
+  var data = {
+    name: req.body.name,
+    _id: mongoose.Types.ObjectId()
+  };
+  country.findOneAndUpdate(
+    { _id: mongoose.Types.ObjectId(_id) },
+    { $push: { states: data } },
+    (err, doc) => {
+      if (err) throw err;
+      res.json(doc);
+    }
+  );
+});
+//route getdata for state
+router.get("/state/:id", (req, res) => {
+  var _id = req.params.id;
+  country.find({ _id: mongoose.Types.ObjectId(_id) }, (err, docs) => {
+    if (err) throw err;
+    res.end(JSON.stringify(docs));
+  });
+});
+
+//route--delete for state
+router.delete("/state/delete/:cid/:sid", (req, res) => {
+  console.log(req.params.cid);
+  console.log(req.params.sid);
+  country.findByIdAndUpdate(
+    { _id: mongoose.Types.ObjectId(req.params.cid) },
+    { $pull: { states: { '_id': mongoose.Types.ObjectId(req.params.sid) } } },
+    { safe: true, upsert: true },
+    function(err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(doc);
+        //do stuff
+      }
+    }
+  );
+});
+
+//route update for state
+router.put("/state/update/:id", (req, res) => {
+  country.findOne({ "states._id": mongoose.Types.ObjectId(r) });
+});
+
 //route--POST --for--paging
 router.post("/pageno/list", (req, res) => {
-    console.log(req.body);
+  console.log(req.body);
 
   var limit = req.body.limit;
   var pageNo = req.body.pageno;
   var skip = (pageNo - 1) * limit;
   console.log("skip > " + skip);
+
   var cursor = country.aggregate([
     {
       $match: {
-           name: {
+        name: {
           $regex: req.body.search,
           $options: "i"
         }
@@ -71,6 +122,8 @@ router.post("/pageno/list", (req, res) => {
   ]);
 
   cursor.exec((err, docs) => {
+    console.log("docs");
+
     console.log(docs);
     res.end(JSON.stringify(docs));
   });
