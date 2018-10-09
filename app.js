@@ -3,6 +3,9 @@ var app = express();
 var bodyparser = require("body-parser");
 var mongoose = require("mongoose");
 var countryRoute = require("./server/api/country.api.js");
+var productRoute = require("./server/api/product.api");
+var path=require("path");
+app.use(express.static(path.join(__dirname, 'uploads')))
 // access controls----------------------------------------------
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -20,13 +23,18 @@ app.use(function (req, res, next) {
 });
 
 //connectDB-----------------------------------
-mongoose.connect("mongodb://localhost/countrydb");
+// mongoose.connect("mongodb://localhost/countrydb");
+mongoose
+    .connect("mongodb://localhost/countrydb", { useNewUrlParser: true })
+    .then(() => console.log("MongoDB connected successfully..."))
+    .catch(err => console.log(err));
 
 //bparser-----------------------------
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
 
 app.use('/country', countryRoute);
+app.use('/product',productRoute)
 
 app.listen(3000);
 console.log("Server is running at PORT:3000");
