@@ -80,13 +80,13 @@ router.delete("/state/delete/:cid/:sid", (req, res) => {
   console.log(req.params.sid);
   country.findByIdAndUpdate(
     { _id: mongoose.Types.ObjectId(req.params.cid) },
-    { $pull: 
-      { states: 
-        { '_id': mongoose.Types.ObjectId(req.params.sid) }
-      } 
+    {
+      $pull: {
+        states: { _id: mongoose.Types.ObjectId(req.params.sid) }
+      }
     },
     { safe: true, upsert: true },
-    (err, doc)=> {
+    (err, doc) => {
       if (err) {
         console.log(err);
       } else {
@@ -100,50 +100,15 @@ router.delete("/state/delete/:cid/:sid", (req, res) => {
 
 //route update for state
 router.put("/update/state1/:cid", (req, res) => {
-  console.log('req.body');
+  console.log("req.body");
   console.log(req.body);
-
-  country.update(
-    {
-     
-      "states._id": mongoose.Types.ObjectId(req.body.id)
-    },
-    {
-      $set: {
-        "states.$.name": req.body.name
-      }
-    },
-    (err, doc) => {
-      if (err) throw err;
-      res.json(doc);
-    }
-  );
-  
-  // console.log(req.body);
-
-  // var data = {
-  //   _id:mongoose.Types.ObjectId(req.body.id),
-  //   name: req.body.name
-  // }
-  // console.log(data);
-  // country.findByIdAndUpdate(
-  //   { 'states._id': mongoose.Types.ObjectId(req.body.id) },
-  //   { "states.$": 1 },
-    
-  //   function(err, result) {
-  //     if (err) {
-  //       console.log(err);
-  //     } else {
-  //       //do stuff
-  //       result.update({ '_id': mongoose.Types.ObjectId(req.body.id)},{$push:{'states.$.name':req.body.name}},function(err1,doc){
-  //         if (err1) console.log(err1);
-          
-  //         res.end(JSON.stringify(doc));
-  //       })
-        
-  //     }
-  //   }
-  // );
+  country.findOne({ "states._id": req.body.id }, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    result.states.id(req.body.id).name = req.body.name;
+    result.save();
+    res.send({ msg: "success" });
+  });
 });
 
 //route--POST --for--paging

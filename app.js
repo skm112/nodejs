@@ -23,9 +23,10 @@ app.use(function (req, res, next) {
 });
 
 //connectDB-----------------------------------
-// mongoose.connect("mongodb://localhost/countrydb");
+const db=require("./setups/myurl").mongoURL1
+
 mongoose
-    .connect("mongodb://localhost/countrydb", { useNewUrlParser: true })
+    .connect(db, { useNewUrlParser: true })
     .then(() => console.log("MongoDB connected successfully..."))
     .catch(err => console.log(err));
 
